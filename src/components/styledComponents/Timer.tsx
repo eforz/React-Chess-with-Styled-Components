@@ -1,0 +1,52 @@
+import { FC, useEffect, useRef, useState } from 'react'
+import styled from 'styled-components'
+import { ITimer } from '../../interfaces/ITimer'
+import { Colors } from '../../models/Colors'
+
+const StyledTimer = styled.div`
+    
+`
+const Timer: FC<ITimer> = ({currentPlayer, restart}) => {
+  
+    const [blackTime, setBlackTime] = useState(300)
+    const [whiteTime, setWhiteTime] = useState(300)
+    const timer = useRef<ReturnType<typeof setInterval> | null>(null)
+    
+    useEffect(() => {
+        startTimer()
+    }, [currentPlayer])
+
+    function startTimer() {
+        if (timer.current) {
+            clearInterval(timer.current)
+        }
+        const callback = currentPlayer?.color === Colors.WHITE? decrementWhiteTimer : decrementBlackTimer;
+        timer.current = setInterval(callback, 1000)
+    }
+
+    function decrementBlackTimer() {
+        setBlackTime(prev => prev - 1)
+    }
+
+    function decrementWhiteTimer() {
+        setWhiteTime(prev => prev - 1)
+    }
+
+    const handleRestart = () => {
+        setWhiteTime(300)
+        setBlackTime(300)
+        restart()
+    }
+
+    return (
+    <StyledTimer>
+        <div>
+            <button onClick={handleRestart}>Restart game</button>
+        </div>
+        <h2>Black - {blackTime}</h2>
+        <h2>White - {whiteTime}</h2>
+    </StyledTimer>
+  )
+}
+
+export default Timer
